@@ -228,12 +228,29 @@
   z-index: 0;
 }
 
-.services-video-hero__media video {
+.services-video-hero__media video,
+.services-video-hero__media img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+/* Still-image heroes start zoomed in and pull back out once, Ken Burns style */
+.services-video-hero__media img {
+  transform-origin: 60% 40%;
+  animation: hero-kenburns 12s ease-out both;
+  will-change: transform;
+}
+
+@keyframes hero-kenburns {
+  from {
+    transform: scale(1.18) translate3d(-1.5%, 1%, 0);
+  }
+  to {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
 }
 
 .services-video-hero__veil {
@@ -321,6 +338,10 @@
 @media (prefers-reduced-motion: reduce) {
   .services-video-hero__media video {
     display: none;
+  }
+
+  .services-video-hero__media img {
+    animation: none;
   }
 
   .services-video-hero__media {
@@ -502,6 +523,19 @@
   padding-bottom: 2px;
 }
 
+.service-article > h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.service-article__media > a {
+  display: block;
+}
+
+.service-article__cta + .service-article__cta {
+  margin-left: 1.5rem;
+}
+
 .service-article__cta:hover {
   color: var(--navy);
   border-bottom-color: var(--navy);
@@ -526,6 +560,33 @@
 @media (min-width: 800px) {
   .service-article__media img {
     height: 20rem;
+  }
+}
+
+/* Wide shots on black: show the whole image, let the card's black absorb the letterbox */
+.service-article__media--contain {
+  display: flex;
+  /* teeth sit on the top edge; the black below blends into the photo's black background */
+  align-items: flex-start;
+  height: 15rem;
+  background: #000;
+}
+
+.service-article__media--contain > a {
+  width: 100%;
+}
+
+.service-article__media--contain img {
+  height: auto;
+}
+
+@media (min-width: 800px) {
+  .service-article__media--contain {
+    height: 20rem;
+  }
+
+  .service-article__media--contain img {
+    height: auto;
   }
 }
 
@@ -682,5 +743,50 @@
 
   .svc-hero__copy {
     margin-top: 1.5rem;
+  }
+}
+
+.svc-orbit__hkp {
+  grid-area: 1 / 1;
+  z-index: 3;
+  display: inline-flex;
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  background: #1d3557;
+  box-shadow: 0 6px 18px rgb(29 53 87 / 0.16);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.svc-orbit__hkp:hover,
+.svc-orbit__hkp:focus-visible {
+  background: #2f6fc4;
+  outline: none;
+}
+
+@media (min-width: 900px) {
+  .svc-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 38rem) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+    text-align: left;
+  }
+
+  .svc-orbit {
+    margin: 0;
+  }
+
+  .svc-hero__copy {
+    max-width: 32rem;
+  }
+
+  .svc-hero__copy h1 {
+    white-space: normal;
   }
 }

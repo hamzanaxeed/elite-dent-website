@@ -56,32 +56,32 @@
   const SERVICES = {
     zirconia: {
       name: "Zirkonversorgungen",
-      href: "../services/#zirconia",
+      href: "../services/zirconia/",
       blurb: "Ästhetischer, biokompatibler Zahnersatz, wenn Farbe und Form im Vordergrund stehen.",
     },
     aligners: {
       name: "Aligner",
-      href: "../services/#aligners",
+      href: "../services/aligners/",
       blurb: "Unauffällige Schienen bei Engstand und Lücken über die Zeit.",
     },
     veneers: {
       name: "Veneers",
-      href: "../services/#veneers",
+      href: "../services/veneers/",
       blurb: "Dünne Keramik, die Form, Absplitterungen und Farbe gemeinsam verfeinert.",
     },
     implants: {
       name: "Implantate",
-      href: "../services/#implants",
+      href: "../services/implants/",
       blurb: "Eine stabile Möglichkeit, einen fehlenden Zahn zu ersetzen.",
     },
     splint: {
       name: "Schienentherapie",
-      href: "../services/#splint",
+      href: "../services/splint/",
       blurb: "Eine individuelle Aufbissschiene, die Zähne vor Knirschen und Pressen schützt.",
     },
     abutments: {
       name: "Hybrid-Abutments",
-      href: "../services/#abutments",
+      href: "../services/abutments/",
       blurb: "Die präzise Verbindung zwischen Implantat und Krone.",
     },
   };

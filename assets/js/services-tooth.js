@@ -2,6 +2,15 @@
   const hero = document.querySelector(".svc-hero");
   const tooth = hero && hero.querySelector("model-viewer");
   if (!tooth) return;
+
+  // Glossy enamel: the Ronin PBR texture is fairly matte, so cut its roughness and drop the
+  // metallic tint (enamel isn't metal); highlights then come from the environment reflections
+  tooth.addEventListener("load", () => {
+    for (const mat of tooth.model?.materials || []) {
+      mat.pbrMetallicRoughness.setRoughnessFactor(0.25);
+      mat.pbrMetallicRoughness.setMetallicFactor(0);
+    }
+  });
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     tooth.removeAttribute("auto-rotate");
     return;

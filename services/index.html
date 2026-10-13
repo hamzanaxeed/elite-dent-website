@@ -14,15 +14,15 @@
   <link rel="preload" href="../assets/fonts/nunito-700-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="../assets/fonts/nunito-800-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="modulepreload" href="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js" />
-  <link rel="preload" href="../assets/images/tooth-3d.glb" as="fetch" type="model/gltf-binary" crossorigin />
+  <link rel="preload" href="../assets/shinytooth/tooth-web.glb" as="fetch" type="model/gltf-binary" crossorigin />
   <link rel="stylesheet" href="../assets/css/fonts.css?v=2" />
-  <link rel="stylesheet" href="../assets/css/critical.css?v=4" />
-  <link rel="preload" href="../assets/css/home.css?v=328" as="style" />
-  <link rel="stylesheet" href="../assets/css/home.css?v=328" />
-  <link rel="stylesheet" href="../assets/css/services.css?v=245" />
+  <link rel="stylesheet" href="../assets/css/critical.css?v=7" />
+  <link rel="preload" href="../assets/css/home.css?v=342" as="style" />
+  <link rel="stylesheet" href="../assets/css/home.css?v=342" />
+  <link rel="stylesheet" href="../assets/css/services.css?v=252" />
   <link rel="stylesheet" href="../assets/css/hkp.css?v=222" />
-  <link rel="stylesheet" href="../assets/css/site-guide.css?v=35" />
-  <script src="../assets/js/navigate.js?v=3"></script>
+  <link rel="stylesheet" href="../assets/css/site-guide.css?v=47" />
+  <script src="../assets/js/navigate.js?v=10"></script>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
   <script src="../assets/js/i18n.js?v=8"></script>
 </head>
@@ -87,8 +87,7 @@
       <div class="svc-orbit">
         <model-viewer
           class="svc-orbit__tooth"
-          src="../assets/images/tooth-3d.glb"
-          poster="../assets/images/tooth-hero.png"
+          src="../assets/shinytooth/tooth-web.glb"
           alt="3D-Modell eines Zahns, folgt dem Mauszeiger"
           camera-controls
           disable-zoom
@@ -106,6 +105,7 @@
           interpolation-decay="60"
           loading="eager"
         ></model-viewer>
+        <a class="svc-orbit__hkp" href="../hkp/">HKP</a>
         <nav class="svc-orbit__nav" aria-label="Leistung wählen">
           <a class="svc-orbit__tab" href="#milling" style="left: 50.0%; top: 6.0%">Fräsmaschine</a>
           <a class="svc-orbit__tab" href="#printing" style="left: 78.3%; top: 16.3%">3D-Druck</a>
@@ -121,6 +121,8 @@
       <div class="svc-hero__copy">
         <h1>Wählen Sie Ihre Leistung.</h1>
         <p>Tippen Sie auf eine Leistung und erfahren Sie mehr.</p>
+        <p>Von digitaler Planung über eigene Fräs- und 3D-Drucktechnik bis zur fertigen Versorgung – alles aus einer Hand, präzise und schnell.</p>
+        <p>Sie haben bereits einen Heil- und Kostenplan? Tippen Sie auf <strong>HKP</strong> in der Mitte des Zahns und lassen Sie ihn von uns prüfen.</p>
         <a class="svc-hero__cta" href="../assess/" data-assess-expand>Lächel-Check starten</a>
       </div>
     </section>
@@ -141,7 +143,7 @@
 
     <div class="service-feed">
       <article id="milling" class="service-article">
-        <h2>Fräsmaschine</h2>
+        <h2><a href="./milling/">Fräsmaschine</a></h2>
         <div class="service-article__copy">
           <p>
             In unserer Fräsmaschine entstehen Zahnersatz und Gerüste aus Zirkon und anderen biokompatiblen Materialien. Die digitale Fertigung arbeitet äußerst präzise und gleichbleibend genau.
@@ -155,14 +157,15 @@
             <li>Zeitnaher Abschluss durch digitale Abläufe</li>
           </ul>
           <a class="service-article__cta" href="../book/">Jetzt beraten</a>
+          <a class="service-article__cta" href="./milling/">Mehr erfahren</a>
         </div>
         <figure class="service-article__media">
-          <img src="../assets/images/servicespg/milling.jpg" alt="Ein helles, ebenmäßiges Lächeln" width="3648" height="5472" loading="lazy" decoding="async" />
+          <a href="./milling/"><img src="../assets/images/servicespg/milling-1600.webp" srcset="../assets/images/servicespg/milling-800.webp 800w, ../assets/images/servicespg/milling-1600.webp 840w" alt="Ein helles, ebenmäßiges Lächeln" width="3648" height="5472" loading="lazy" decoding="async" /></a>
         </figure>
       </article>
 
       <article id="printing" class="service-article reveal" data-reveal>
-        <h2>3D-Druck</h2>
+        <h2><a href="./printing/">3D-Druck</a></h2>
         <div class="service-article__copy">
           <p>
             Der 3D-Druck ergänzt unsere digitale Fertigung. Modelle, Schienen und Bohrschablonen werden direkt aus dem Scan gedruckt, ohne Umwege über Abdrücke.
@@ -176,14 +179,15 @@
             <li>Effiziente, präzise Abwicklung</li>
           </ul>
           <a class="service-article__cta" href="../book/">Jetzt beraten</a>
+          <a class="service-article__cta" href="./printing/">Mehr erfahren</a>
         </div>
         <figure class="service-article__media">
-          <img src="../assets/images/servicespg/3dprinting.jpg" alt="Hände halten Zahnpflegeprodukte" width="5472" height="3648" loading="lazy" decoding="async" />
+          <a href="./printing/"><img src="../assets/images/servicespg/3dprinting-1600.webp" srcset="../assets/images/servicespg/3dprinting-800.webp 800w, ../assets/images/servicespg/3dprinting-1600.webp 1600w" alt="Hände halten Zahnpflegeprodukte" width="5472" height="3648" loading="lazy" decoding="async" /></a>
         </figure>
       </article>
 
       <article id="aligners" class="service-article reveal" data-reveal>
-        <h2>Aligner</h2>
+        <h2><a href="./aligners/">Aligner</a></h2>
         <div class="service-article__copy">
           <p>
             Engstände und kleine Lücken lassen sich ohne Metallbrackets korrigieren. Ein digitaler Scan erstellt einen Schritt-für-Schritt-Plan, den Sie vor der ersten Schiene sehen können.
@@ -197,14 +201,15 @@
             <li>Fortschrittskontrollen unterwegs</li>
           </ul>
           <a class="service-article__cta" href="../book/">Jetzt beraten</a>
+          <a class="service-article__cta" href="./aligners/">Mehr erfahren</a>
         </div>
         <figure class="service-article__media">
-          <img src="../assets/images/servicespg/aligner.jpg" alt="Nahaufnahme eines natürlich wirkenden Lächelns" width="5472" height="3648" loading="lazy" decoding="async" />
+          <a href="./aligners/"><img src="../assets/images/servicespg/aligner-1600.webp" srcset="../assets/images/servicespg/aligner-800.webp 800w, ../assets/images/servicespg/aligner-1600.webp 1600w" alt="Nahaufnahme eines natürlich wirkenden Lächelns" width="5472" height="3648" loading="lazy" decoding="async" /></a>
         </figure>
       </article>
 
       <article id="template" class="service-article reveal" data-reveal>
-        <h2>Digitale Bohrschablone</h2>
+        <h2><a href="./template/">Digitale Bohrschablone</a></h2>
         <div class="service-article__copy">
           <p>
             Für die Implantation planen wir die Position digital und übertragen sie mit einer Bohrschablone in den Mund. Die Schablone führt den Bohrer entlang der geplanten Achse und Tiefe.
@@ -218,14 +223,15 @@
             <li>Abgestimmt auf die spätere Versorgung</li>
           </ul>
           <a class="service-article__cta" href="../book/">Jetzt beraten</a>
+          <a class="service-article__cta" href="./template/">Mehr erfahren</a>
         </div>
         <figure class="service-article__media">
-          <img src="../assets/images/servicespg/digitaldrilling.jpg" alt="Ein volles, selbstbewusstes Lächeln" width="4455" height="3341" loading="lazy" decoding="async" />
+          <a href="./template/"><img src="../assets/images/servicespg/digitaldrilling-1600.webp" srcset="../assets/images/servicespg/digitaldrilling-800.webp 800w, ../assets/images/servicespg/digitaldrilling-1600.webp 1600w" alt="Ein volles, selbstbewusstes Lächeln" width="4455" height="3341" loading="lazy" decoding="async" /></a>
         </figure>
       </article>
 
       <article id="splint" class="service-article reveal" data-reveal>
-        <h2>Schienentherapie</h2>
+        <h2><a href="./splint/">Schienentherapie</a></h2>
         <div class="service-article__copy">
           <p>
             Knirschen und Pressen belasten Zähne und Kiefergelenk. Eine individuell angefertigte Aufbissschiene schützt die Zähne und kann die Muskulatur entlasten.
@@ -239,14 +245,15 @@
             <li>Präziser Sitz nach digitalem Scan</li>
           </ul>
           <a class="service-article__cta" href="../book/">Jetzt beraten</a>
+          <a class="service-article__cta" href="./splint/">Mehr erfahren</a>
         </div>
         <figure class="service-article__media">
-          <img src="../assets/images/servicespg/railtherapy.jpg" alt="Ein helles, ebenmäßiges Lächeln" width="5355" height="4016" loading="lazy" decoding="async" />
+          <a href="./splint/"><img src="../assets/images/servicespg/railtherapy-1600.webp" srcset="../assets/images/servicespg/railtherapy-800.webp 800w, ../assets/images/servicespg/railtherapy-1600.webp 1600w" alt="Ein helles, ebenmäßiges Lächeln" width="5355" height="4016" loading="lazy" decoding="async" /></a>
         </figure>
       </article>
 
       <article id="zirconia" class="service-article reveal" data-reveal>
-        <h2>Zirkonversorgungen</h2>
+        <h2><a href="./zirconia/">Zirkonversorgungen</a></h2>
         <div class="service-article__copy">
           <p>
             Zirkon ist belastbar, biokompatibel und wirkt natürlich. Wir fertigen hochwertige und ästhetisch ansprechende Zirkon-Zahnersätze für Kassen- und Privatpatienten.
@@ -260,14 +267,15 @@
             <li>10 Jahre Garantie</li>
           </ul>
           <a class="service-article__cta" href="../book/">Jetzt beraten</a>
+          <a class="service-article__cta" href="./zirconia/">Mehr erfahren</a>
         </div>
         <figure class="service-article__media">
-          <img src="../assets/images/servicespg/zirconiarestoration.jpg" alt="Nahaufnahme eines natürlich wirkenden Lächelns" width="5184" height="3456" loading="lazy" decoding="async" />
+          <a href="./zirconia/"><img src="../assets/images/servicespg/zirconiarestoration-1600.webp" srcset="../assets/images/servicespg/zirconiarestoration-800.webp 800w, ../assets/images/servicespg/zirconiarestoration-1600.webp 1400w" alt="Nahaufnahme eines natürlich wirkenden Lächelns" width="5184" height="3456" loading="lazy" decoding="async" /></a>
         </figure>
       </article>
 
       <article id="veneers" class="service-article reveal" data-reveal>
-        <h2>Veneers</h2>
+        <h2><a href="./veneers/">Veneers</a></h2>
         <div class="service-article__copy">
           <p>
             Absplitterungen, Lücken und ungleichmäßige Farbe können ein Lächeln unfertig wirken lassen. Dünne Keramik-Veneers verfeinern Form und Farbe, sodass das Ergebnis wie Ihre Zähne wirkt – nur ruhiger und ebenmäßiger.
@@ -281,14 +289,15 @@
             <li>Langlebige, verfärbungsresistente Keramik</li>
           </ul>
           <a class="service-article__cta" href="../book/">Jetzt beraten</a>
+          <a class="service-article__cta" href="./veneers/">Mehr erfahren</a>
         </div>
-        <figure class="service-article__media">
-          <img src="../assets/images/servicespg/veneers.jpg" alt="Hände halten Zahnpflegeprodukte" width="2816" height="2253" loading="lazy" decoding="async" />
+        <figure class="service-article__media service-article__media--contain">
+          <a href="./veneers/"><img src="../assets/images/servicespg/veneers.png" alt="Nahaufnahme von Veneers an den oberen Frontzähnen" width="530" height="231" loading="lazy" decoding="async" /></a>
         </figure>
       </article>
 
       <article id="implants" class="service-article reveal" data-reveal>
-        <h2>Implantate</h2>
+        <h2><a href="./implants/">Implantate</a></h2>
         <div class="service-article__copy">
           <p>
             Ein fehlender Zahn beeinflusst Kauen, Sprechen und die Nachbarzähne. Ein Implantat setzt eine Titanwurzel im Knochen, darauf eine individuelle Krone, die sich beim Essen und Sprechen sicher anfühlt.
@@ -302,14 +311,15 @@
             <li>Krone abgestimmt auf die Nachbarzähne</li>
           </ul>
           <a class="service-article__cta" href="../book/">Jetzt beraten</a>
+          <a class="service-article__cta" href="./implants/">Mehr erfahren</a>
         </div>
         <figure class="service-article__media">
-          <img src="../assets/images/servicespg/implants.jpg" alt="Ein volles, selbstbewusstes Lächeln" width="5472" height="3648" loading="lazy" decoding="async" />
+          <a href="./implants/"><img src="../assets/images/servicespg/implants-1600.webp" srcset="../assets/images/servicespg/implants-800.webp 800w, ../assets/images/servicespg/implants-1600.webp 1600w" alt="Ein volles, selbstbewusstes Lächeln" width="5472" height="3648" loading="lazy" decoding="async" /></a>
         </figure>
       </article>
 
       <article id="abutments" class="service-article reveal" data-reveal>
-        <h2>Hybrid-Abutments</h2>
+        <h2><a href="./abutments/">Hybrid-Abutments</a></h2>
         <div class="service-article__copy">
           <p>
             Ein Hybrid-Abutment verbindet das Implantat mit der Krone. Es besteht aus einer Titanbasis und einem Aufbau aus Zirkon, der individuell gefertigt wird.
@@ -323,9 +333,10 @@
             <li>Natürlicher Übergang zum Zahnfleisch</li>
           </ul>
           <a class="service-article__cta" href="../book/">Jetzt beraten</a>
+          <a class="service-article__cta" href="./abutments/">Mehr erfahren</a>
         </div>
         <figure class="service-article__media">
-          <img src="../assets/images/servicespg/hybridabutments.jpg" alt="Ein helles, ebenmäßiges Lächeln" width="5184" height="3456" loading="lazy" decoding="async" />
+          <a href="./abutments/"><img src="../assets/images/servicespg/hybridabutments-1600.webp" srcset="../assets/images/servicespg/hybridabutments-800.webp 800w, ../assets/images/servicespg/hybridabutments-1600.webp 1600w" alt="Ein helles, ebenmäßiges Lächeln" width="5184" height="3456" loading="lazy" decoding="async" /></a>
         </figure>
       </article>
     </div>
@@ -406,11 +417,11 @@
     <p class="site-footer__credit">Copyright © 2026 | Powered by <a class="notranslate" translate="no" href="https://vawcom.com" target="_blank" rel="noopener noreferrer">VAWCOM</a></p>
   </footer>
 
-  <script src="../assets/js/nav.js?v=24" defer></script>
+  <script src="../assets/js/nav.js?v=25" defer></script>
   <script src="../assets/js/services.js?v=15" defer></script>
-  <script src="../assets/js/services-tooth.js?v=1" defer></script>
+  <script src="../assets/js/services-tooth.js?v=2" defer></script>
   <script src="../assets/js/assess-expand.js?v=3" defer></script>
-  <script src="../assets/js/guide-scripts.js?v=20" defer></script>
-  <script src="../assets/js/site-guide-agent.js?v=68" defer></script>
+  <script src="../assets/js/guide-scripts.js?v=23" defer></script>
+  <script src="../assets/js/site-guide-agent.js?v=83" defer></script>
 </body>
 </html>

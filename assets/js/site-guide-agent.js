@@ -13,7 +13,7 @@
   const recordedUrls = new Set();
   (() => {
     const add = (folder, step) => {
-      if (step?.id && step.text?.de) RECORDED.set(step.text.de, `/assets/audio/guide/${folder}/${step.id}.de.mp3`);
+      if (step?.id && step.text?.de && !RECORDED.has(step.text.de)) RECORDED.set(step.text.de, `/assets/audio/guide/${folder}/${step.id}.de.mp3`);
     };
     for (const [path, sc] of Object.entries(SCRIPTS)) {
       const folder = path === "/" ? "home" : path.replace(/^\//, "");
@@ -95,6 +95,9 @@
   let gestureArm = null;
   let startArmed = false;
   const MIN_KEY = "elitedent-guide-min";
+  // Wide desktop screens: she stands in her own column on the right (see .is-stage in site-guide.css)
+  const STAGE_MQ = window.matchMedia("(min-width: 1200px) and (pointer: fine)");
+  const STAGE_FRAME = { radius: 5.9, y: 0.98, x: -0.3, pitch: 82, fov: 20 };
   let minimized = false;
   try {
     minimized = sessionStorage.getItem(MIN_KEY) === "1";
@@ -115,8 +118,8 @@
     '<button type="button" class="site-guide__open"></button>' +
     '<div class="site-guide__avatar has-model" aria-hidden="true">' +
     '<img class="site-guide__face site-guide__face--large" src="/assets/images/guide/erlan-large.webp?v=1" alt="" width="1600" height="1200" decoding="async" />' +
-    '<img class="site-guide__face site-guide__face--small" src="/assets/images/guide/erlan-small.webp?v=1" alt="" width="256" height="256" decoding="async" />' +
-    '<model-viewer class="site-guide__model" src="/assets/images/guide/nurse.glb?v=2" camera-target="0m 1.5m 0m" camera-orbit="0deg 88deg 0.8m" min-camera-orbit="auto auto 0.1m" max-camera-orbit="auto auto 10m" field-of-view="30deg" interpolation-decay="80" interaction-prompt="none" disable-tap loading="eager"></model-viewer>' +
+    '<img class="site-guide__face site-guide__face--small" src="/assets/images/guide/bot-small.webp?v=1" alt="" width="256" height="256" decoding="async" />' +
+    '<model-viewer class="site-guide__model" tone-mapping="neutral" animation-name="stand" autoplay camera-target="0m 1.72m 0m" camera-orbit="0deg 88deg 0.8m" min-camera-orbit="auto auto 0.1m" max-camera-orbit="auto auto 10m" field-of-view="30deg" interpolation-decay="80" interaction-prompt="none" disable-tap loading="eager"></model-viewer>' +
     "</div>" +
     '<div class="site-guide__body">' +
     '<img class="site-guide__media" alt="" decoding="async" hidden />' +
@@ -245,6 +248,17 @@
     setIcon(closeBtn, ICON_CLOSE);
     closeBtn.setAttribute("aria-label", en ? "Move guide aside" : "Begleitung zur Seite legen");
     root.classList.toggle("is-min", minimized && !hubOpen);
+    const stage = STAGE_MQ.matches && !minimized && !hubOpen;
+    if (stage && !root.classList.contains("is-stage")) {
+      // Frame her straight away so the face close-up never flashes before the animation loop runs
+      const model = avatar.querySelector(".site-guide__model");
+      const f = STAGE_FRAME;
+      model.cameraOrbit = `0deg ${f.pitch}deg ${f.radius}m`;
+      model.cameraTarget = `${f.x}m ${f.y}m 0m`;
+      model.fieldOfView = `${f.fov}deg`;
+      model.jumpCameraToGoal?.();
+    }
+    root.classList.toggle("is-stage", stage);
     openBtn.hidden = !(minimized && !hubOpen);
     openBtn.setAttribute("aria-label", en ? "Open the guide" : "Begleitung öffnen");
     setIcon(topicsBtn, ICON_TOPICS);
@@ -432,6 +446,7 @@
     if (nodes.length && nodes.length === spotlightEls.length && [...nodes].every((el, i) => el === spotlightEls[i])) return;
     clearSpotlight();
     if (!nodes.length) return;
+    pointAtSpotlight(step);
     nodes.forEach((el) => {
       el.classList.add("is-guide-spotlight");
       spotlightEls.push(el);
@@ -570,6 +585,132 @@
 
   const FLY_MS = 520;
   const FLY_EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
+
+  // The logo on the reception wall, as the box the logo artwork (splash brand / nav logo, same
+  // framing) fills when laid over it: fractions of reception.jpg, fitted to the sign's lettering
+  const HUB_SIGN = { x: 0.2793, y: 0.0654, w: 0.4432, h: 0.3686 };
+  const HUB_PHOTO_ASPECT = 1536 / 1024;
+  // Where the backdrop photo is drawn right now, from its real size and nudge (see .guide-hub)
+  function hubPhoto() {
+    const r = hub.getBoundingClientRect();
+    const cs = getComputedStyle(hub);
+    // The photo is the second background layer (between the floor fade and the floor fill)
+    const pw = parseFloat(cs.backgroundSize.split(",")[1]);
+    const shift = parseFloat(cs.getPropertyValue("--hub-gap-shift")) || 0;
+    const url = /url\("?([^")]+)"?\)/.exec(cs.backgroundImage)?.[1];
+    if (!pw || !r.width || !url) return null;
+    const ph = pw / HUB_PHOTO_ASPECT;
+    return {
+      url,
+      width: pw,
+      height: ph,
+      left: r.left + (r.width - pw) / 2 + shift * pw,
+      // Centred when it covers the height, pinned to the top when it doesn't (narrow phones)
+      top: r.top + Math.min(0, (r.height - ph) / 2),
+    };
+  }
+  // Where the sign is on screen now
+  function hubSignBox() {
+    const p = hubPhoto();
+    if (!p) return null;
+    return {
+      left: p.left + HUB_SIGN.x * p.width,
+      top: p.top + HUB_SIGN.y * p.height,
+      width: HUB_SIGN.w * p.width,
+      height: HUB_SIGN.h * p.height,
+    };
+  }
+  // The wall sign cut out of the backdrop, soft-edged, sitting exactly on it. The wall sign is drawn
+  // differently from the logo artwork, so the logo flying to the nav lifts off as this cut-out (the
+  // very same pixels, no visible switch) and cross-fades into the nav logo in flight.
+  // It is padded beyond the sign box (same centre) so its soft edge falls on plain wall
+  const CUTOUT_PAD = 0.1;
+  function hubSignCutout() {
+    const p = hubPhoto();
+    const sign = hubSignBox();
+    if (!p || !sign) return null;
+    const padX = sign.width * CUTOUT_PAD;
+    const padY = sign.height * CUTOUT_PAD;
+    const box = { left: sign.left - padX, top: sign.top - padY, width: sign.width + 2 * padX, height: sign.height + 2 * padY };
+    const el = document.createElement("div");
+    const edge = "transparent, #000 12%, #000 88%, transparent";
+    Object.assign(el.style, {
+      position: "fixed",
+      left: `${box.left}px`,
+      top: `${box.top}px`,
+      width: `${box.width}px`,
+      height: `${box.height}px`,
+      background: `url("${p.url}") ${p.left - box.left}px ${p.top - box.top}px / ${p.width}px auto no-repeat`,
+      maskImage: `linear-gradient(to right, ${edge}), linear-gradient(${edge})`,
+      maskComposite: "intersect",
+      webkitMaskImage: `linear-gradient(to right, ${edge}), linear-gradient(${edge})`,
+      webkitMaskComposite: "source-in",
+      pointerEvents: "none",
+      willChange: "transform, opacity",
+    });
+    return el;
+  }
+
+  const LOGO_FLY_MS = 820;
+  const LOGO_FLY_EASE = "cubic-bezier(0.33, 0, 0.2, 1)";
+  // Leaving the welcome: the logo lifts off the reception wall into its place in the nav. It
+  // starts as the wall sign itself (cut-out) and becomes the nav logo early in the flight.
+  function flyLogoToNav() {
+    const navMark = document.querySelector(".nav__brand img");
+    const from = hubSignBox();
+    const cutout = hubSignCutout();
+    const to = navMark?.getBoundingClientRect();
+    if (reducedMotion || !from || !cutout || !to?.width || typeof navMark.animate !== "function") return;
+    const logo = new Image();
+    logo.src = navMark.currentSrc || navMark.src;
+    logo.alt = "";
+    Object.assign(logo.style, {
+      position: "fixed",
+      left: `${from.left}px`,
+      top: `${from.top}px`,
+      width: `${from.width}px`,
+      height: `${from.height}px`,
+      zIndex: "63",
+      pointerEvents: "none",
+      willChange: "transform, opacity",
+    });
+    Object.assign(cutout.style, { zIndex: "62" });
+    // Same centre, same transform, same timing: the two travel as one
+    for (const el of [cutout, logo]) el.style.transformOrigin = "50% 50%";
+    document.body.append(cutout, logo);
+    navMark.style.opacity = "0";
+    const s = to.width / from.width;
+    const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+    const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+    const moved = `translate(${dx}px, ${dy}px) scale(${s})`;
+    const timing = { duration: LOGO_FLY_MS, easing: LOGO_FLY_EASE, fill: "forwards" };
+    cutout.animate(
+      [
+        { transform: "none", opacity: 1 },
+        { opacity: 1, offset: 0.05 },
+        { opacity: 0, offset: 0.35 },
+        { transform: moved, opacity: 0 },
+      ],
+      timing,
+    );
+    logo
+      .animate(
+        [
+          { transform: "none", opacity: 0 },
+          { opacity: 0, offset: 0.05 },
+          { opacity: 1, offset: 0.35 },
+          { transform: moved, opacity: 1 },
+        ],
+        timing,
+      )
+      .finished.catch(() => {})
+      .then(() => {
+        navMark.style.opacity = "";
+        logo.remove();
+        cutout.remove();
+      });
+  }
+
 
   function guideBox(el) {
     const r = el.getBoundingClientRect();
@@ -714,6 +855,7 @@
     if (!hubOpen || introBusy) return Promise.resolve();
     introBusy = true;
     hubOpen = false;
+    if (introActive) flyLogoToNav();
     document.documentElement.classList.remove("is-gru-intro", "is-gru-intro-pending");
     hub.setAttribute("aria-hidden", "true");
     hub.inert = true;
@@ -765,6 +907,7 @@
     markIntroSeen();
     if (normalizePath(url.pathname) !== normalizePath(location.pathname)) {
       stopNow();
+      document.dispatchEvent(new CustomEvent("elitedent:leave"));
       location.href = url.href;
       return;
     }
@@ -1265,6 +1408,7 @@
     render();
   });
 
+  STAGE_MQ.addEventListener("change", render);
   window.addEventListener("pagehide", stopNow);
   window.addEventListener("pageshow", (event) => {
     if (!event.persisted) return;
@@ -1340,9 +1484,13 @@
   // directly (nod while talking, glances, small tilts, turning toward the cursor). The camera
   // itself stays level, so the figure never moves up and down.
   const MODEL_VIEWER = "https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js";
+  // femalebot-guide-lite.glb with a WebP texture and meshopt-compressed geometry (scripts/optimize-glb.cjs)
+  const AVATAR_SRC = "/assets/femalebot/femalebot-guide-web.glb?v=1";
   const avatarModel = avatar.querySelector(".site-guide__model");
   // Framing: face in the small bubble, head and shoulders in the full-screen intro
-  const AVATAR_FRAME = { small: { radius: 0.8, y: 1.5 }, intro: { radius: 1.15, y: 1.47 } };
+  // Her body sits ~6cm right of the model's origin (her face ~4cm), so x re-centres her in frame
+  const AVATAR_FRAME = { stage: STAGE_FRAME, small: { radius: 0.8, y: 1.72, x: 0.037 }, intro: { radius: 1.9, y: 1.6, x: 0.06 }, introWide: { radius: 2.6, y: 1.48, x: 0.06 } };
+  const INTRO_ZOOM_MS = 3000;
   // The head mesh includes the neck and upper chest skin, which overlaps the shirt collar. Rotating the
   // whole mesh made that skin slide over the shirt, so the bend is done per vertex in the shader instead:
   // everything below the collar stays put and the rotation fades in over the neck (y = NECK_FIXED..NECK_FREE, all below the chin).
@@ -1389,20 +1537,153 @@ objectNormal = normalize(mix(objectNormal, mat3(uNeckRot) * objectNormal, neckW(
     return { scene, neck };
   }
 
+  // On the stage she gestures toward the content (screen-left) once per line that spotlights
+  // something (not again after a pause/resume), then settles back into the idle stand
+  const POINT_MS = 2700; // length of the "point" clip
+  const pointedSteps = new Set();
+  let pointTimer = 0;
+  function pointAtSpotlight(step) {
+    if (reducedMotion || !root.classList.contains("is-stage") || !avatarModel?.loaded) return;
+    if (pointedSteps.has(step.id)) return;
+    pointedSteps.add(step.id);
+    avatarModel.animationName = "point";
+    avatarModel.play({ repetitions: 1 });
+    clearTimeout(pointTimer);
+    pointTimer = setTimeout(backToStand, POINT_MS);
+  }
+
+  function backToStand() {
+    clearTimeout(pointTimer);
+    if (avatarModel.animationName === "stand") return;
+    avatarModel.animationName = "stand";
+    avatarModel.play();
+  }
+
+  // Lip movement: the model has a "jaw" bone (added in Blender) that opens with the loudness of
+  // the voice. Each clip is decoded once into a loudness curve sampled at MOUTH_FPS, then read at
+  // audio.currentTime, so the audio itself never goes through Web Audio.
+  const MOUTH_FPS = 50;
+  const MOUTH_MAX = 0.055; // radians, fully open; more stretches the lip texture (the model has no mouth interior)
+  const envelopes = new Map();
+
+  function loadEnvelope(src) {
+    if (envelopes.has(src) || typeof OfflineAudioContext === "undefined") return;
+    envelopes.set(src, null);
+    fetch(src)
+      .then((r) => r.arrayBuffer())
+      .then((buf) => new OfflineAudioContext(1, 1, 22050).decodeAudioData(buf))
+      .then((audioBuf) => {
+        const data = audioBuf.getChannelData(0);
+        const step = Math.max(1, Math.floor(audioBuf.sampleRate / MOUTH_FPS));
+        const env = new Float32Array(Math.ceil(data.length / step));
+        for (let i = 0; i < env.length; i += 1) {
+          let sum = 0;
+          const end = Math.min(data.length, (i + 1) * step);
+          for (let j = i * step; j < end; j += 1) sum += data[j] * data[j];
+          env[i] = Math.sqrt(sum / step);
+        }
+        // Normalise against a loud-but-not-peak level so ordinary speech opens the mouth well
+        const sorted = Float32Array.from(env).sort();
+        const ref = sorted[Math.floor(sorted.length * 0.95)] || 1;
+        for (let i = 0; i < env.length; i += 1) env[i] = Math.min(1, env[i] / ref);
+        envelopes.set(src, env);
+      })
+      .catch(() => {});
+  }
+
+  function avatarJaw() {
+    const sym = Object.getOwnPropertySymbols(avatarModel).find((s) => s.description === "scene");
+    const scene = sym && avatarModel[sym];
+    const jaw = scene?.getObjectByName("jaw");
+    if (!jaw) return null;
+    const Quat = jaw.quaternion.constructor;
+    return { scene, jaw, rest: jaw.quaternion.clone(), open: new Quat(), axis: new jaw.position.constructor(1, 0, 0), Quat };
+  }
+
+  // A slight, friendly resting smile. The face has no expression shapes, so the mouth corners are
+  // lifted a few millimetres in the vertex shader (before skinning, so the talking jaw still works)
+  // and the lip texture curves up with them. Corners are in the lite model's own mesh coordinates
+  // (about 1 unit per metre), found by picking them on the rendered face.
+  const SMILE_CORNERS = [
+    [-0.0154, 0.7604, 0.0963, -1],
+    [0.0375, 0.7604, 0.0974, 1],
+  ];
+  const SMILE_LIFT = [0.0018, 0.006, -0.002]; // out to the side, up, back into the cheek
+
+  function avatarSmile() {
+    const sym = Object.getOwnPropertySymbols(avatarModel).find((s) => s.description === "scene");
+    let face = null;
+    avatarModel[sym]?.traverse((o) => {
+      if (o.isSkinnedMesh) face = o;
+    });
+    if (!face) return;
+    for (const mat of [].concat(face.material)) {
+      const before = mat.onBeforeCompile;
+      mat.onBeforeCompile = (shader, renderer) => {
+        before?.call(mat, shader, renderer);
+        shader.vertexShader = shader.vertexShader
+          .replace(
+            "#include <common>",
+            `#include <common>
+vec3 smileAt(vec3 p, vec3 c, float side) {
+  vec3 d = (p - c) / vec3(0.013, 0.008, 0.012);
+  return exp(-0.5 * dot(d, d)) * vec3(side * ${SMILE_LIFT[0]}, ${SMILE_LIFT[1]}, ${SMILE_LIFT[2]});
+}`
+          )
+          .replace(
+            "#include <begin_vertex>",
+            `#include <begin_vertex>
+${SMILE_CORNERS.map(([x, y, z, side]) => `transformed += smileAt(position, vec3(${x}, ${y}, ${z}), ${side.toFixed(1)});`).join("\n")}`
+          );
+      };
+      const key = mat.customProgramCacheKey?.bind(mat);
+      mat.customProgramCacheKey = () => `${key ? key() : ""}smile`;
+      mat.needsUpdate = true;
+    }
+  }
+
   function startAvatarModel() {
-    if (!avatarModel) return;
+    if (!avatarModel) {
+      avatar.classList.add("is-3d-failed");
+      return;
+    }
     avatar.classList.add("has-3d");
-    const fail = () => avatar.classList.remove("has-3d");
+    const fail = () => {
+      avatar.classList.remove("has-3d", "is-3d-ready");
+      avatar.classList.add("is-3d-failed");
+    };
     avatarModel.addEventListener("error", fail, { once: true });
-    import(MODEL_VIEWER).catch(fail);
+    // The welcome intro needs her right away; everywhere else she waits until the page itself has
+    // loaded, so the model doesn't compete with the content on a slow mobile connection
+    const loadModel = () =>
+      import(MODEL_VIEWER)
+        .then(() => {
+          avatarModel.src = AVATAR_SRC;
+        })
+        .catch(fail);
+    if (wantsIntro()) loadModel();
+    else if (document.readyState === "complete") setTimeout(loadModel, 300);
+    else addEventListener("load", () => setTimeout(loadModel, 300), { once: true });
 
     let rig = null;
+    let mouth = null;
+    let mouthOpen = 0;
+    avatarModel.addEventListener("finished", backToStand);
     avatarModel.addEventListener("load", () => {
+      avatar.classList.add("is-3d-ready");
       try {
         rig = avatarHead();
       } catch (_) {
         rig = null;
       }
+      try {
+        mouth = avatarJaw();
+      } catch (_) {
+        mouth = null;
+      }
+      try {
+        avatarSmile();
+      } catch (_) {}
     });
 
     let cursorX = 0;
@@ -1414,6 +1695,7 @@ objectNormal = normalize(mix(objectNormal, mat3(uNeckRot) * objectNormal, neckW(
     let glanceY = 0;
     let glanceAt = 0;
     let running = false;
+    let introAt = 0;
     const t0 = performance.now();
 
     if (!reducedMotion) {
@@ -1433,9 +1715,34 @@ objectNormal = normalize(mix(objectNormal, mat3(uNeckRot) * objectNormal, neckW(
       requestAnimationFrame(tick);
       if (!avatarModel.loaded) return;
       const intro = root.classList.contains("is-intro");
-      const frame = intro ? AVATAR_FRAME.intro : AVATAR_FRAME.small;
-      avatarModel.cameraOrbit = `0deg 88deg ${frame.radius}m`;
-      avatarModel.cameraTarget = `0m ${frame.y}m 0m`;
+      let frame = root.classList.contains("is-stage") ? AVATAR_FRAME.stage : AVATAR_FRAME.small;
+      if (intro) {
+        // Intro opens on her face, then eases out a little
+        introAt ||= now;
+        const k = reducedMotion ? 1 : Math.min(1, (now - introAt) / INTRO_ZOOM_MS);
+        const e = k * k * (3 - 2 * k);
+        const a = AVATAR_FRAME.intro;
+        const b = AVATAR_FRAME.introWide;
+        frame = { radius: a.radius + (b.radius - a.radius) * e, y: a.y + (b.y - a.y) * e, x: a.x };
+      } else {
+        introAt = 0;
+      }
+      avatarModel.cameraOrbit = `0deg ${frame.pitch || 88}deg ${frame.radius}m`;
+      avatarModel.fieldOfView = `${frame.fov || 30}deg`;
+      avatarModel.cameraTarget = `${frame.x || 0}m ${frame.y}m 0m`;
+      if (mouth) {
+        let target = 0;
+        if (audio.src && !audio.paused && status === "playing") {
+          const env = envelopes.get(audio.src);
+          if (env === undefined) loadEnvelope(audio.src);
+          else if (env) target = env[Math.floor(audio.currentTime * MOUTH_FPS)] || 0;
+        }
+        // Opens fast, closes a little slower, like a real jaw
+        mouthOpen += (target - mouthOpen) * (target > mouthOpen ? 0.6 : 0.35);
+        mouth.open.setFromAxisAngle(mouth.axis, mouthOpen * MOUTH_MAX);
+        mouth.jaw.quaternion.copy(mouth.rest).multiply(mouth.open);
+        mouth.scene.queueRender();
+      }
       if (!rig || reducedMotion) return;
 
       const t = (now - t0) / 1000;
