@@ -244,6 +244,16 @@
   will-change: transform;
 }
 
+/* Portrait product shot on black: show it whole, off to the right of the title, on matching black */
+.services-video-hero__media--contain {
+  background: #000;
+}
+
+.services-video-hero__media--contain img {
+  object-fit: contain;
+  object-position: 78% 50%;
+}
+
 @keyframes hero-kenburns {
   from {
     transform: scale(1.18) translate3d(-1.5%, 1%, 0);
@@ -588,6 +598,31 @@
   .service-article__media--contain img {
     height: auto;
   }
+}
+
+/* Several photos of one service, each its own card: lead image across the top, the rest side by side below */
+.service-article__media--gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  overflow: visible;
+  border-radius: 0;
+  background: none;
+}
+
+.service-article__media--gallery img {
+  height: auto;
+  border-radius: 1.35rem;
+  background: #000;
+}
+
+.service-article__media--gallery img:first-child {
+  grid-column: 1 / -1;
+}
+
+.service-article__media--gallery img:not(:first-child) {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
 }
 
 /* Later services fade in on scroll; first stays static */

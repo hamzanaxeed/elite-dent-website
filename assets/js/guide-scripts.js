@@ -192,7 +192,7 @@ window.ELITEDENT_GUIDE = {
           id: "services-splint",
           when: "#splint",
           spotlight: "#splint",
-          image: "/assets/images/servicespg/railtherapy-800.webp",
+          image: "/assets/images/wearsplint-800.webp",
           text: {
             de: "Schienentherapie: individuelle Aufbissschienen, die Zähne vor Knirschen und Pressen schützen.",
             en: "Splint therapy: custom bite splints that protect teeth from grinding and clenching.",
@@ -222,7 +222,7 @@ window.ELITEDENT_GUIDE = {
           id: "services-implants",
           when: "#implants",
           spotlight: "#implants",
-          image: "/assets/images/servicespg/implants-800.webp",
+          image: "/assets/images/implant1-800.webp",
           text: {
             de: "Implantate: fehlende Zähne ersetzen mit stabilem Fundament und natürlich wirkender Krone.",
             en: "Implants: replace missing teeth with a stable foundation and a natural-looking crown.",
@@ -397,7 +397,7 @@ window.ELITEDENT_GUIDE = {
           id: "services-splint",
           when: "start",
           spotlight: ".services-video-hero",
-          image: "/assets/images/servicespg/railtherapy-800.webp",
+          image: "/assets/images/wearsplint-800.webp",
           text: {
             de: "Schienentherapie: individuelle Aufbissschienen, die Zähne vor Knirschen und Pressen schützen.",
             en: "Splint therapy: custom bite splints that protect teeth from grinding and clenching.",
@@ -496,7 +496,7 @@ window.ELITEDENT_GUIDE = {
           id: "services-implants",
           when: "start",
           spotlight: ".services-video-hero",
-          image: "/assets/images/servicespg/implants-800.webp",
+          image: "/assets/images/implant1-800.webp",
           text: {
             de: "Implantate: fehlende Zähne ersetzen mit stabilem Fundament und natürlich wirkender Krone.",
             en: "Implants: replace missing teeth with a stable foundation and a natural-looking crown.",

@@ -5,6 +5,10 @@
       "maxDuration": 30
     }
   },
+  "rewrites": [
+    { "source": "/scan-upload", "destination": "https://dental-lab-ai-production.up.railway.app/scan-upload" },
+    { "source": "/scan-upload/logo.png", "destination": "https://dental-lab-ai-production.up.railway.app/scan-upload/logo.png" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
